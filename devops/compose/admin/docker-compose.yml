@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Postgres Database
+  postgres:
+    image: postgres:16.1
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    ports:
+      - "5432:5432"
+    restart: always
+
+  # pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:8.0
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    depends_on:
+      - postgres
+    networks:
+      - internal
+    ports:
+      - "5050:80"
+    restart: always
+
+  # Portainer
+  portainer:
+    image: portainer/portainer-ce:2.19.4
+    container_name: portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - internal
+    ports:
+      - "9000:9000"
+    restart: always
+
+volumes:
+  postgres_data:
+    driver: local
+  portainer_data:
+    driver: local
+
+networks:
+  internal:
+    driver: bridge
