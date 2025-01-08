@@ -148,9 +148,13 @@ app.get('/get-user-temperatures', (req, res) => {
     });
 });
 
-// Endpoint 6: Get Temperature for User and Device
-app.get('/get-temperature/:userId/:deviceId', (req, res) => {
-    const { userId, deviceId } = req.params;
+// Endpoint 6: Get Temperature for User and Device (Using Query Params)
+app.get('/get-temperature', (req, res) => {
+    const { userId, deviceId } = req.query;
+
+    if (!userId || !deviceId) {
+        return res.status(400).json({ status: 'error', message: 'User ID and Device ID are required' });
+    }
 
     db.get('SELECT * FROM user_temperature WHERE user_id = ? AND device_id = ?', [userId, deviceId], (err, temp) => {
         if (err || !temp) {
