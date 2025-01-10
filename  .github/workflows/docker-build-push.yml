@@ -1,0 +1,44 @@
+name: Build and Push FE and BE Docker Images
+
+on:
+  push:
+    branches:
+      - main 
+  workflow_dispatch: 
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # FE Docker image
+      - name: Build and Push FE Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./iot_frontend 
+          file: ./iot_frontend/Dockerfile 
+          push: true
+          tags: |
+            koliacv/fe-repository:latest
+
+      # BE Docker image
+      - name: Build and Push BE Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./iot_backend 
+          file: ./iot_backend/Dockerfile 
+          push: true
+          tags: |
+            koliacv/be-repository:latest

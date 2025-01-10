@@ -1,10 +1,27 @@
+require('dotenv').config(); 
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 
 const app = express();
-const db = new sqlite3.Database('./iot.db');
 app.use(bodyParser.json());
+
+// Retrieve PostgreSQL connection details from environment variables
+const pool = new Pool({
+    user: process.env.POSTGRES_USER,
+    host: process.env.POSTGRES_HOST,
+    password: process.env.POSTGRES_PASSWORD,
+    port: process.env.POSTGRES_PORT,
+});
+
+// Test database connection
+pool.connect((err) => {
+    if (err) {
+        console.error('Failed to connect to the database:', err.message);
+    } else {
+        console.log('Connected to the PostgreSQL database');
+    }
+});
 
 // Database initialization
 db.serialize(() => {
