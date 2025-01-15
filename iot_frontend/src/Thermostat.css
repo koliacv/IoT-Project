@@ -1,0 +1,159 @@
+.thermostat-container {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: #333;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    min-height: 100vh; /* Ensure container fills the viewport */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f7f3f0; 
+  }
+   /* Ensure the body and html take full viewport height */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Full viewport height */
+    background-color: #f7f3f0; /* Your background color */
+  }
+  
+ .status {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    color: gray;
+  }
+  
+  .circle {
+    width: 250px;
+    height: 250px;
+    border: 8px solid #ff7034;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .temperature h2 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: #ff7034;
+  }
+  
+  .temperature p {
+    font-size: 1rem;
+    color: gray;
+  }
+  
+  .controls {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    width: 100px;
+  }
+  
+  button {
+    background: #ff7034;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  button:hover {
+    background: #e6602c;
+  }
+  
+  .menu {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .menu button {
+    background: #ddd;
+    color: #333;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  
+  .menu .power {
+    background: #ff7034;
+    color: white;
+  }
+  
+  /* Media Query for Phone Screens (width < 600px) */
+  @media screen and (max-width: 600px) {
+    .circle {
+      width: 200px;
+      height: 200px;
+      border-width: 5px;
+    }
+  
+    .temperature h2 {
+      font-size: 2rem;
+    }
+  
+    .temperature p {
+      font-size: 0.9rem;
+    }
+  
+    .controls button {
+      width: 35px;
+      height: 35px;
+      font-size: 0.8rem;
+    }
+  
+    .menu button {
+      padding: 8px 15px;
+      font-size: 0.8rem;
+    }
+  }
+  
+  /* Media Query for Desktop Screens (width > 1024px) */
+  @media screen and (min-width: 1024px) {
+    .circle {
+      width: 300px;
+      height: 300px;
+      border-width: 10px;
+    }
+  
+    .temperature h2 {
+      font-size: 3rem;
+    }
+  
+    .temperature p {
+      font-size: 1.1rem;
+    }
+  
+    .controls button {
+      width: 50px;
+      height: 50px;
+      font-size: 1.2rem;
+    }
+  
+    .menu button {
+      padding: 12px 25px;
+      font-size: 1rem;
+    }
+  }
+
+ 
