@@ -1,7 +1,6 @@
 // Import necessary libraries
 import React, { useState } from "react";
-import { API_URL } from "../config";
-import "./App.css"; 
+import "./App.css"; // Optional: Add your CSS styling here
 
 // Main Login Component
 const Login = ({ setPage }) => {
@@ -9,45 +8,21 @@ const Login = ({ setPage }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    if (username === "" || password === "") {
-        setError("Username and password cannot be empty.");
-        return;
-      } else {
-    try {
-      const response = await fetch(API_URL+"/validate-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setPage(data.userId);
-      } else {
-        setError("Invalid username or password.");
-      }
-    } catch (error) {
-      setError("Something went wrong");
-    }}
 
     // Simple validation
-    // if (username === "" || password === "") {
-    //   setError("Username and password cannot be empty.");
-    //   return;
-    // }
+    if (username === "" || password === "") {
+      setError("Username and password cannot be empty.");
+      return;
+    }
 
-    // // Dummy check for username and password
-    // if (username === "admin" && password === "123456") {
-    //   setPage("thermostat");
-    // } else {
-      
-    // console.log("err", username, password, password === "123456", username === "admin")
-    //   setError("Invalid username or password.");
-    // }
+    // Dummy check for username and password
+    if (username === "admin" && password === "123456") {
+      setPage("thermostat");
+    } else {
+      setError("Invalid username or password.");
+    }
   };
 
   return (
