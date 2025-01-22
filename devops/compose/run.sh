@@ -14,8 +14,8 @@ case "$ENVIRONMENT" in
     COMPOSE_DIR="admin"
     project_network="internal"
     #Prepare directories 
-    sudo mkdir -p ./admin/include/postgres_data && sudo chmod -R 700 ./admin/include/postgres_data
-    sudo mkdir -p ./admin/include/portainer_data && sudo chmod -R 700 ./admin/include/portainer_data
+    sudo mkdir -p ./admin/include/postgres_data && sudo chmod -R 777 ./admin/include/postgres_data
+    sudo mkdir -p ./admin/include/portainer_data && sudo chmod -R 777 ./admin/include/portainer_data
     ;;
   deployment)
     COMPOSE_DIR="deployment"

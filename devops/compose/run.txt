@@ -1,1 +1,6 @@
 git clone https://github.com/koliacv/IoT-Project.git
+
+
+Jenkins Simulator will responce in port 9595 of your IP. 
+To run write `python3 jenkins_simulator.py` 
+To delete the process `pkill -f "jenkins_simulator.py"`
