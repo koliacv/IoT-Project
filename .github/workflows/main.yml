@@ -31,7 +31,7 @@ jobs:
           file: ./iot_frontend/Dockerfile 
           push: true
           tags: |
-            koliacv/fe-repository:latest
+            kolia2526/fe-repository:latest
 
       # BE Docker image
       - name: Build and Push BE Docker Image
@@ -41,4 +41,4 @@ jobs:
           file: ./iot_backend/Dockerfile 
           push: true
           tags: |
-            koliacv/be-repository:latest
+            kolia2526/be-repository:latest
