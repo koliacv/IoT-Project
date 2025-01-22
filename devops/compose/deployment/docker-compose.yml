@@ -2,33 +2,34 @@ version: '3.8'
 
 services:
   frontend:
-    image: koliacv/fe-repository:latest    
+    image: kolia2526/fe-repository:latest    
     # build:
     #   context: ./frontend # Path to the frontend Dockerfile
     #   dockerfile: Dockerfile
     ports:
-      - "8080:80" # Map port 80 to 8080
+      - "8080:80"
     networks:
-      - app-network
+      - app_network
 
   backend:
-    image: koliacv/be-repository:latest    
+    image: kolia2526/be-repository:latest    
     # build:
     #   context: ./backend # Path to the backend Dockerfile
     #   dockerfile: Dockerfile
     ports:
-      - "3000:3000" # Map port 3000 to 3000
+      - "3000:3000" 
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: postgres
       POSTGRES_HOST: postgres_db
       POSTGRES_PORT: 5432
-    depends_on:
-      - database
     networks:
-      - app-network
+      - app_network
+      - internal
 
 networks:
-  app-network:
+  app_network:
+    external: true
+  internal:
     external: true
