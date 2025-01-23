@@ -54,8 +54,10 @@ fi
 
 # Start docker-compose
 echo "Starting docker-compose in the '${COMPOSE_DIR}' directory..."
+cd ${COMPOSE_DIR}
+git pull ${COMPOSE_DIR}
 # docker-compose -f "${COMPOSE_DIR}/docker-compose.yml" up -d --remove-orphans
-docker stack deploy --prune --with-registry-auth --compose-file ${COMPOSE_DIR}/docker-compose.yml ${COMPOSE_DIR}
+docker stack deploy --prune --with-registry-auth --compose-file docker-compose.yml ${COMPOSE_DIR}
 
 # Verify success
 if [[ $? -eq 0 ]]; then
