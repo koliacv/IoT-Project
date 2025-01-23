@@ -45,4 +45,4 @@ jobs:
             
       - name: Deploy Container on Environment
         run: |
-          curl --request GET http://127.0.0.1:9595
+          curl --request GET http://3.15.141.7:9595

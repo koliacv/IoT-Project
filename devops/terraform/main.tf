@@ -67,31 +67,13 @@ resource "aws_security_group" "web_sg" {
   name        = "web-sg"
   description = "Allow SSH, HTTP, and HTTPS"
   vpc_id      = aws_vpc.main_vpc.id
-
   ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    description = "All Trafic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
@@ -107,13 +89,13 @@ resource "aws_security_group" "web_sg" {
 
 # Master
 resource "aws_instance" "master" {
-  ami                    = "ami-0b4624933067d393a" 
+  ami                         = "ami-0b4624933067d393a"
   instance_type               = "t2.nano"
   subnet_id                   = aws_subnet.public_subnet.id
-  vpc_security_group_ids          = [aws_security_group.web_sg.id]
+  vpc_security_group_ids      = [aws_security_group.web_sg.id]
   associate_public_ip_address = true
 
-    
+
   user_data = templatefile("os_redhat_init_master.sh", {
     efs_mount_dir = "/mnt/efs",
   })

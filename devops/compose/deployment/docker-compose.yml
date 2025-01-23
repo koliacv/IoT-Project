@@ -6,8 +6,10 @@ services:
     # build:
     #   context: ./frontend # Path to the frontend Dockerfile
     #   dockerfile: Dockerfile
+    environment:
+      BACKEND_SERVER: http://backend:3000
     ports:
-      - "8080:80"
+      - "80:80"
     networks:
       - app_network
 
