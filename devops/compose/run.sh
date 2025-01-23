@@ -40,7 +40,7 @@ if [[ -z "$project_network" ]]; then
 fi
 if ! docker network inspect "$project_network" &>/dev/null; then
   echo "Creating network $project_network..."
-  if docker network create --driver overlay --attachable "$project_network"; then
+  if docker network create --driver bridge --attachable "$project_network"; then
     echo "Network $project_network created successfully."
   else
     echo "Failed to create network $project_network!" "Error!" "critical"
@@ -54,7 +54,8 @@ fi
 
 # Start docker-compose
 echo "Starting docker-compose in the '${COMPOSE_DIR}' directory..."
-docker-compose -f "${COMPOSE_DIR}/docker-compose.yml" up -d --remove-orphans
+# docker-compose -f "${COMPOSE_DIR}/docker-compose.yml" up -d --remove-orphans
+docker stack deploy --prune --with-registry-auth --compose-file ${COMPOSE_DIR}/docker-compose.yml ${COMPOSE_DIR}
 
 # Verify success
 if [[ $? -eq 0 ]]; then
