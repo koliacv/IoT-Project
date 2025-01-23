@@ -7,7 +7,7 @@ services:
     #   context: ./frontend # Path to the frontend Dockerfile
     #   dockerfile: Dockerfile
     environment:
-      BACKEND_SERVER: http://backend:3000
+      API_URL: http://3.15.141.7:3000
     ports:
       - "80:80"
     networks:
