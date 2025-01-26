@@ -7,7 +7,7 @@ services:
     #   context: ./frontend # Path to the frontend Dockerfile
     #   dockerfile: Dockerfile
     environment:
-      API_URL: http://3.15.141.7:3000
+      API_URL: https://backend.visiongrid.online/
     ports:
       - "4000:80"
     networks:

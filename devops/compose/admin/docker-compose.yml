@@ -67,7 +67,9 @@ services:
       # User 
       INITIAL_ADMIN_EMAIL: admin@gmail.com
       INITIAL_ADMIN_PASSWORD: ewIstRasteoU  
-
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     volumes:
       - ./external/proxy/data:/data
       - ./external/proxy/letsencrypt:/etc/letsencrypt
