@@ -35,8 +35,8 @@ services:
   # Portainer
   # admin
   # ewIstRasteoU
-
   portainer:
+    restart: unless-stopped
     image: portainer/portainer-ce:2.21.5
     container_name: portainer
     volumes:
@@ -46,23 +46,36 @@ services:
       - internal
     ports:
       - "9000:9000"
+
+#proxy
+#admin@gmail.com
+#ewIstRasteoU
+  proxy_app:
+    image: docker.io/jc21/nginx-proxy-manager:latest
     restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+      # Postgres parameters:
+      DB_POSTGRES_HOST: 'postgres'
+      DB_POSTGRES_PORT: '5432'
+      DB_POSTGRES_USER: 'admin'
+      DB_POSTGRES_PASSWORD: 'admin'
+      DB_POSTGRES_NAME: 'proxy'     
+      # User 
+      INITIAL_ADMIN_EMAIL: admin@gmail.com
+      INITIAL_ADMIN_PASSWORD: ewIstRasteoU  
 
-
-# #proxy
-#   proxy_app:
-#     image: docker.io/jc21/nginx-proxy-manager:latest
-#     restart: unless-stopped
-#     ports:
-#       - '80:80'
-#       - '81:81'
-#       - '443:443'
-#     volumes:
-#       - ./include/proxy/data:/data
-#       - ./include/proxy/letsencrypt:/etc/letsencrypt
-#     networks: 
-#       - internal
-
+    volumes:
+      - ./external/proxy/data:/data
+      - ./external/proxy/letsencrypt:/etc/letsencrypt
+    networks: 
+      - internal
+    depends_on:
+      - postgres
+      
 networks:
   internal:
     driver: bridge

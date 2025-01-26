@@ -9,7 +9,7 @@ services:
     environment:
       API_URL: http://3.15.141.7:3000
     ports:
-      - "80:80"
+      - "4000:80"
     networks:
       - app_network
 

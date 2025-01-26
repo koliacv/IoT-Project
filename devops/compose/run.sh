@@ -1,5 +1,7 @@
 #!/bin/bash
-
+unset current_dir
+unset project_network
+unset 
 # Check if the ENVIRONMENT variable is set
 if [[ -z "$1" ]]; then
   echo "Error: ENVIRONMENT variable not set. Use 'admin' or 'deployment'."
@@ -7,18 +9,20 @@ if [[ -z "$1" ]]; then
 fi
 
 ENVIRONMENT=$1
-
+current_dir=$(pwd)
+echo "${current_dir}/"
 # Determine the folder and docker-compose file
 case "$ENVIRONMENT" in
   admin)
-    COMPOSE_DIR="admin"
+    compose_dir="admin"
     project_network="internal"
     #Prepare directories 
     sudo mkdir -p ./admin/include/postgres_data && sudo chmod -R 777 ./admin/include/postgres_data
-    sudo mkdir -p ./admin/include/portainer_data && sudo chmod -R 777 ./admin/include/portainer_data
+    sudo mkdir -p ./admin/include/portainer_data && sudo chmod -R 777 ./admin/include/portainer_data 
+    sudo chmod -R 777 ./admin/external/proxy
     ;;
   deployment)
-    COMPOSE_DIR="deployment"
+    compose_dir="deployment"
     project_network="app_network"
     ;;
   *)
@@ -28,8 +32,8 @@ case "$ENVIRONMENT" in
 esac
 
 # Check if the docker-compose.yml file exists in the directory
-if [[ ! -f "${COMPOSE_DIR}/docker-compose.yml" ]]; then
-  echo "Error: docker-compose.yml not found in ${COMPOSE_DIR} directory."
+if [[ ! -f "${current_dir}/${compose_dir}/docker-compose.yml" ]]; then
+  echo "Error: docker-compose.yml not found in ${compose_dir} directory."
   exit 1
 fi
 
@@ -53,18 +57,19 @@ fi
 
 
 # Start docker-compose
-echo "Starting docker-compose in the '${COMPOSE_DIR}' directory..."
-cd ${COMPOSE_DIR}
-git pull ${COMPOSE_DIR}
-# docker-compose -f "${COMPOSE_DIR}/docker-compose.yml" up -d --remove-orphans
-docker stack deploy --prune --with-registry-auth --compose-file docker-compose.yml ${COMPOSE_DIR}
+echo "Starting docker-compose in the '${current_dir}/${compose_dir}' directory..."
+cd ${current_dir}/${compose_dir}
+git pull
+
+# docker-compose -f "${compose_dir}/docker-compose.yml" up -d --remove-orphans
+docker stack deploy --prune --with-registry-auth --compose-file "${current_dir}/${compose_dir}/docker-compose.yml" ${ENVIRONMENT}
 
 # Verify success
 if [[ $? -eq 0 ]]; then
-  echo "docker-compose started successfully in '${COMPOSE_DIR}' directory."
+  echo "docker-compose started successfully in '${current_dir}/${compose_dir}' directory."
 else
   echo "Error: Failed to start docker-compose."
   exit 1
 fi
 
-docker ps
+docker service ls

@@ -1,7 +1,7 @@
 // Import necessary libraries
 import React, { useState } from "react";
 import { API_URL } from "../config";
-import "./App.css"; 
+import "./App.css";
 
 // Main Login Component
 const Login = ({ setPage }) => {
@@ -12,27 +12,28 @@ const Login = ({ setPage }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (username === "" || password === "") {
-        setError("Username and password cannot be empty.");
-        return;
-      } else {
-    try {
-      const response = await fetch(API_URL+"/validate-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      setError("Username and password cannot be empty.");
+      return;
+    } else {
+      try {
+        const response = await fetch(API_URL + "/validate-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        setPage(data.userId);
-      } else {
-        setError("Invalid username or password.");
+        if (response.ok) {
+          const data = await response.json();
+          setPage(data.userId);
+        } else {
+          setError("Invalid username or password.");
+        }
+      } catch (error) {
+        setError("Something went wrong");
       }
-    } catch (error) {
-      setError("Something went wrong");
-    }}
+    }
 
     // Simple validation
     // if (username === "" || password === "") {
@@ -44,7 +45,7 @@ const Login = ({ setPage }) => {
     // if (username === "admin" && password === "123456") {
     //   setPage("thermostat");
     // } else {
-      
+
     // console.log("err", username, password, password === "123456", username === "admin")
     //   setError("Invalid username or password.");
     // }
@@ -75,7 +76,7 @@ const Login = ({ setPage }) => {
           />
         </div>
         {error && <p className="error-message">{error}</p>}
-        <button style={{width:'auto'}} type="submit">Login</button>
+        <button style={{ width: 'auto' }} type="submit">Login</button>
       </form>
     </div>
   );
