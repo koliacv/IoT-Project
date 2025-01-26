@@ -11,6 +11,7 @@ services:
     ports:
       - "4000:80"
     networks:
+      - internal
       - app_network
 
   backend:
