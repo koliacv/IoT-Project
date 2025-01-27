@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { API_URL } from "../config";
 import "./Thermostat.css";
 
-const Thermostat = (userID) => {
-  const [device, setDevice] = useState("");
+// eslint-disable-next-line react/prop-types
+const Thermostat = ({ userID, deviceID }) => {
+  const [device, setDevice] = useState(deviceID);
   const [temperature, setTemperature] = useState(20.5); // Default thermostat temperature
   const [roomTemp, setRoomTemp] = useState(18.0); // Default room temperature
 
@@ -14,27 +15,64 @@ const Thermostat = (userID) => {
   // const increaseTemp = () => setTemperature((prev) => Math.min(prev + 0.5, 30));
   // const decreaseTemp = () => setTemperature((prev) => Math.max(prev - 0.5, 5));
 
+  // useEffect(() => {
+  //   const fetchTemperatures = async () => {
+  //     try {
+  //       const response = await fetch(`${API_URL}/get-temperatures/${userID}`, {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+
+  //       if (response.ok) {
+  //         const data = await response.json().tempretures;
+  //         if (data.length > 0) {
+  //           const deviceTemp = data[0].currentTemperatures || null;
+  //           const userTemp = data[0].userTemperature || null;
+  //           const deviceID = data[0].deviceId || null;
+
+  //         console.log("thermistat", data, data.length)
+
+  //           setRoomTemp(deviceTemp);
+  //           setTemperature(userTemp);
+  //           setDevice(deviceID);
+  //         }
+  //       } else {
+  //         console.error("Failed to fetch temperatures");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching temperatures:", error);
+  //     }
+  //   };
+
+  //   fetchTemperatures();
+  // }, []);
+
   useEffect(() => {
     const fetchTemperatures = async () => {
+      console.log("AAAA");
       try {
-        const response = await fetch(`${API_URL}/get-temperatures/${userID}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${API_URL}/get-temperature/${userID}/${device}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (response.ok) {
-          const data = await response.json().tempretures;
-          if (data.length > 0) {
-            const deviceTemp = data[0].currentTemperatures || null;
-            const userTemp = data[0].userTemperature || null;
-            const deviceID = data[0].deviceId || null;
+          const data = await response.json();
+          const deviceTemp = data.currentTemperature || null;
+          const userTemp = data.userTemperature || null;
 
-            setRoomTemp(deviceTemp);
-            setTemperature(userTemp);
-            setDevice(deviceID);
-          }
+          console.log("thermistat", data);
+
+          setRoomTemp(deviceTemp);
+          setTemperature(userTemp);
+          setDevice(deviceID);
         } else {
           console.error("Failed to fetch temperatures");
         }
@@ -46,40 +84,45 @@ const Thermostat = (userID) => {
     fetchTemperatures();
   }, []);
 
-  useEffect(() => {
-    if (temperature !== null) {
-      const sendTemperatureUpdate = async () => {
-        try {
-          const response = await fetch(`${API_URL}/set-temperature`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              userId: userID,
-              deviceId: device,
-              temperature,
-            }),
-          });
+  // useEffect(() => {
 
-          if (!response.ok) {
-            console.error("Failed to update temperature");
-          }
-        } catch (error) {
-          console.error("Error updating temperature:", error);
+  const sendTemperatureUpdate = async () => {
+    if (temperature !== null && device !== null) {
+      try {
+        const response = await fetch(`${API_URL}/set-temperature`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userID,
+            deviceId: device,
+            temperature,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error("Failed to update temperature");
         }
-      };
-
-      sendTemperatureUpdate();
+      } catch (error) {
+        console.error("Error updating temperature:", error);
+      }
     }
-  }, [temperature, device]);
+  };
+  sendTemperatureUpdate();
+
+  // }, [temperature, device, userID]);
 
   // Handlers to increase and decrease temperature
-  const increaseTemp = () =>
+  const increaseTemp = () => {
     setTemperature((prev) => Math.min(prev + 0.5, 30));
+    sendTemperatureUpdate();
+  };
 
-  const decreaseTemp = () =>
+  const decreaseTemp = () => {
     setTemperature((prev) => Math.max(prev - 0.5, 5));
+    sendTemperatureUpdate();
+  };
 
   if (loading) {
     return (

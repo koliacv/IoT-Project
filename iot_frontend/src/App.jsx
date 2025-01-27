@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import Thermostat from "./Thermostat";
 import Login from "./login";
 import "./App.css";
@@ -6,9 +6,11 @@ import "./App.css";
 function App() {
   const [page, setPage] = useState("login");
   const [userID, setUserID] = useState("");
+  const [deviceID, setDeviceID] = useState("");
 
-  const goToThermostat=(newUserID)=> {
+  const goToThermostat=(newUserID, newDeviceId)=> {
     setUserID(newUserID);
+    setDeviceID(newDeviceId);
     setPage("thermostat");
   }
 
@@ -22,7 +24,7 @@ function App() {
 
   return (
     <div className="App">
-      <Thermostat userID={userID}/>
+      <Thermostat userID={userID} deviceID={deviceID}/>
     </div>
   );
 }

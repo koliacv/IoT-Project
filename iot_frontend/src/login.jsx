@@ -4,6 +4,7 @@ import { API_URL } from "../config";
 import "./App.css";
 
 // Main Login Component
+// eslint-disable-next-line react/prop-types
 const Login = ({ setPage }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +27,7 @@ const Login = ({ setPage }) => {
 
         if (response.ok) {
           const data = await response.json();
-          setPage(data.userId);
+          setPage(data.userId, data.deviceId);
         } else {
           setError("Invalid username or password.");
         }
