@@ -8,6 +8,7 @@ services:
     #   dockerfile: Dockerfile
     environment:
       API_URL: https://backend.visiongrid.online
+      BROKER_URL: https://open-mqtt.visiongrid.online
     ports:
       - "4000:80"
     networks:
@@ -27,6 +28,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
+      BROKER_URL: http://emqx1:1883
     networks:
       - app_network
       - internal
