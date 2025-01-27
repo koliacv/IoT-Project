@@ -215,20 +215,39 @@ app.put('/set-temperature', async (req, res) => {
 });
 
 // Endpoint 4: Validate User
+// Endpoint 4: Validate User
 app.post('/validate-user', async (req, res) => {
   const { username, password } = req.body;
   try {
+    // Fetch user by username
     const userRes = await pool.query(
       'SELECT * FROM "user" WHERE username = $1',
       [username]
     );
     const user = userRes.rows[0];
+
+    // Validate user credentials
     if (!user || user.password !== password) {
       return res
         .status(404)
         .json({ status: 'error', message: 'Invalid username or password' });
     }
-    return res.json({ status: 'success', userId: user.id });
+
+    // Fetch deviceId associated with the user from user_device table
+    const deviceRes = await pool.query(
+      'SELECT device_id FROM user_device WHERE user_id = $1',
+      [user.id]
+    );
+
+    // Extract deviceId (assuming only one device is linked)
+    const deviceId = deviceRes.rows.length > 0 ? deviceRes.rows[0].device_id : null;
+
+    // Return success response with userId and deviceId
+    return res.json({ 
+      status: 'success', 
+      userId: user.id, 
+      deviceId 
+    });
   } catch (err) {
     console.error('Error validating user:', err);
     return res
