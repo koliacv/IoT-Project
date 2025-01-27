@@ -19,9 +19,9 @@ case "$ENVIRONMENT" in
     compose_dir="admin"
     project_network="internal"
     #Prepare directories 
-    sudo mkdir -p ${temp_dir}/admin/include/postgres_data && sudo chmod -R 777 ${temp_dir}/admin/include/postgres_data
-    sudo mkdir -p ${temp_dir}/admin/include/portainer_data && sudo chmod -R 777 ${temp_dir}/admin/include/portainer_data 
-    sudo chmod -R 777 ${temp_dir}/admin/external/proxy
+    sudo mkdir -p ${temp_dir}/admin/include/postgres_data && sudo chmod -R 755 ${temp_dir}/admin/include/postgres_data
+    sudo mkdir -p ${temp_dir}/admin/include/portainer_data && sudo chmod -R 755 ${temp_dir}/admin/include/portainer_data 
+    sudo cp -R .${current_dir}/admin/external ${temp_dir}/admin/external && sudo chmod -R 755 ${temp_dir}/admin/external
     ;;
   deployment)
     compose_dir="deployment"
