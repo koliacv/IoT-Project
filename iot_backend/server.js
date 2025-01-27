@@ -8,7 +8,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // Configure CORS
-const allowedOrigins = ['https://visiongrid.online']; // Add your frontend origin here
+const allowedOrigins = ['https://visiongrid.online', 'http://localhost:5173']; // Add your frontend origin here
 app.use(
   cors({
     origin: allowedOrigins,
