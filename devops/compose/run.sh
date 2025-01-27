@@ -10,6 +10,8 @@ fi
 
 ENVIRONMENT=$1
 current_dir=$(pwd)
+temp_dir="/tmp"
+
 echo "${current_dir}/"
 # Determine the folder and docker-compose file
 case "$ENVIRONMENT" in
@@ -17,9 +19,9 @@ case "$ENVIRONMENT" in
     compose_dir="admin"
     project_network="internal"
     #Prepare directories 
-    sudo mkdir -p ./admin/include/postgres_data && sudo chmod -R 777 ./admin/include/postgres_data
-    sudo mkdir -p ./admin/include/portainer_data && sudo chmod -R 777 ./admin/include/portainer_data 
-    sudo chmod -R 777 ./admin/external/proxy
+    sudo mkdir -p ${temp_dir}/admin/include/postgres_data && sudo chmod -R 777 ${temp_dir}/admin/include/postgres_data
+    sudo mkdir -p ${temp_dir}/admin/include/portainer_data && sudo chmod -R 777 ${temp_dir}/admin/include/portainer_data 
+    sudo chmod -R 777 ${temp_dir}/admin/external/proxy
     ;;
   deployment)
     compose_dir="deployment"
