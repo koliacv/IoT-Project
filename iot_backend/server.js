@@ -257,14 +257,14 @@ app.post('/validate-user', async (req, res) => {
 });
 
 // Endpoint 5: Get User Temperatures (via Query Params)
-app.get('/get-user-temperatures', async (req, res) => {
-  const { userId } = req.query;
-  if (!userId) {
-    return res
-      .status(400)
-      .json({ status: 'error', message: 'User ID is required' });
-  }
-
+app.get('/get-user-temperatures/:userId', async (req, res) => {
+    const { userId } = req.params; // Extract userId and deviceId from route parameters
+  
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'User ID is required' });
+    }
   try {
     const temps = await pool.query(
       'SELECT * FROM user_temperature WHERE user_id = $1',
@@ -284,9 +284,10 @@ app.get('/get-user-temperatures', async (req, res) => {
   }
 });
 
-// Endpoint 6: Get Temperature for User and Device (Using Query Params)
-app.get('/get-temperature', async (req, res) => {
-  const { userId, deviceId } = req.query;
+// Endpoint 6: Get Temperature for User and Device (Using Route Parameters)
+app.get('/get-temperature/:userId/:deviceId', async (req, res) => {
+  const { userId, deviceId } = req.params; // Extract userId and deviceId from route parameters
+
   if (!userId || !deviceId) {
     return res
       .status(400)
