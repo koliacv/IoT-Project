@@ -2,9 +2,20 @@ require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // Add CORS package
 
 const app = express();
 app.use(bodyParser.json());
+
+// Configure CORS
+const allowedOrigins = ['https://visiongrid.online']; // Add your frontend origin here
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 // Create a new pool using environment variables
 // These can be passed via Docker (e.g., `-e POSTGRES_USER=...`) or a .env file
