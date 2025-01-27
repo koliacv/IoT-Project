@@ -15,7 +15,6 @@ const Thermostat = ({ userID, deviceID }) => {
 
   useEffect(() => {
     const fetchTemperatures = async () => {
-      console.log("AAAA");
       try {
         const response = await fetch(
           `${API_URL}/get-temperature/${userID}/${device}`,
