@@ -45,7 +45,7 @@ python3 smart-device.py
 To start the vm for user, run the Python script:
 ```
 python smart-devic2e.py
-or
+//or
 python3 smart-device2.py
 ```
 
@@ -54,8 +54,13 @@ python3 smart-device2.py
 You can stop the project at any time by pressing Ctrl+C/Control+Z in the terminal.
 
 ## MQTT and API Details
+
 MQTT Broker: open-mqtt.visiongrid.online
+
 MQTT Port: 1883
+
 MQTT Topic: smarthome/temperature
+
 API URL: https://backend.visiongrid.online
+
 API Endpoint for Temperature: https://backend.visiongrid.online/get-temperature/{USER_ID}/{DEVICE_ID}
