@@ -61,6 +61,12 @@ echo "Starting docker-compose in the '${current_dir}/${compose_dir}' directory..
 cd ${current_dir}/${compose_dir}
 git pull
 
+# Start Jenkins Simulation
+if ! netstat -tuln | grep "0.0.0.0:9595"; then
+  echo "Jenkins Reciver is not Started... Start..."
+  python3 "${current_dir}/jenkins_simulator.py"
+fi 
+
 # docker-compose -f "${compose_dir}/docker-compose.yml" up -d --remove-orphans
 docker stack deploy --prune --with-registry-auth --compose-file "${current_dir}/${compose_dir}/docker-compose.yml" ${ENVIRONMENT}
 

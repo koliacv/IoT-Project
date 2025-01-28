@@ -4,14 +4,14 @@ import json
 import requests
 import paho.mqtt.client as mqtt
 
-current_temperature = 22.0
-set_temperature = 20.0
+current_temperature = 20.0
+set_temperature = 16.0
 boiler_on = False
 
 
 API_URL = "https://backend.visiongrid.online"
-USER_ID = "fa7ee9d4-2df1-4e17-9058-2876ec25c34c"
-DEVICE_ID = "e7b7e3f8-bad1-48c4-a650-ced436ad0725"
+USER_ID = "d1f7834a-53ea-4d40-88b0-3b1f6288859f"
+DEVICE_ID = "612e469e-cf48-447f-b265-3be80e05faf1"
 
 
 MQTT_BROKER = "open-mqtt.visiongrid.online"
@@ -62,6 +62,7 @@ def decrease_temperature():
     while True:
         if not boiler_on:
             current_temperature -= 0.5
+            print(f"DEC TEMP {current_temperature}")
         time.sleep(2)
 
 

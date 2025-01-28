@@ -8,7 +8,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // Configure CORS
-const allowedOrigins = ['https://visiongrid.online']; // Add your frontend origin here
+const allowedOrigins = ['https://visiongrid.online', 'http://localhost:5173']; // Add your frontend origin here
 app.use(
   cors({
     origin: allowedOrigins,
@@ -215,20 +215,39 @@ app.put('/set-temperature', async (req, res) => {
 });
 
 // Endpoint 4: Validate User
+// Endpoint 4: Validate User
 app.post('/validate-user', async (req, res) => {
   const { username, password } = req.body;
   try {
+    // Fetch user by username
     const userRes = await pool.query(
       'SELECT * FROM "user" WHERE username = $1',
       [username]
     );
     const user = userRes.rows[0];
+
+    // Validate user credentials
     if (!user || user.password !== password) {
       return res
         .status(404)
         .json({ status: 'error', message: 'Invalid username or password' });
     }
-    return res.json({ status: 'success', userId: user.id });
+
+    // Fetch deviceId associated with the user from user_device table
+    const deviceRes = await pool.query(
+      'SELECT device_id FROM user_device WHERE user_id = $1',
+      [user.id]
+    );
+
+    // Extract deviceId (assuming only one device is linked)
+    const deviceId = deviceRes.rows.length > 0 ? deviceRes.rows[0].device_id : null;
+
+    // Return success response with userId and deviceId
+    return res.json({ 
+      status: 'success', 
+      userId: user.id, 
+      deviceId 
+    });
   } catch (err) {
     console.error('Error validating user:', err);
     return res
@@ -238,14 +257,14 @@ app.post('/validate-user', async (req, res) => {
 });
 
 // Endpoint 5: Get User Temperatures (via Query Params)
-app.get('/get-user-temperatures', async (req, res) => {
-  const { userId } = req.query;
-  if (!userId) {
-    return res
-      .status(400)
-      .json({ status: 'error', message: 'User ID is required' });
-  }
-
+app.get('/get-user-temperatures/:userId', async (req, res) => {
+    const { userId } = req.params; // Extract userId and deviceId from route parameters
+  
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'User ID is required' });
+    }
   try {
     const temps = await pool.query(
       'SELECT * FROM user_temperature WHERE user_id = $1',
@@ -265,9 +284,10 @@ app.get('/get-user-temperatures', async (req, res) => {
   }
 });
 
-// Endpoint 6: Get Temperature for User and Device (Using Query Params)
-app.get('/get-temperature', async (req, res) => {
-  const { userId, deviceId } = req.query;
+// Endpoint 6: Get Temperature for User and Device (Using Route Parameters)
+app.get('/get-temperature/:userId/:deviceId', async (req, res) => {
+  const { userId, deviceId } = req.params; // Extract userId and deviceId from route parameters
+
   if (!userId || !deviceId) {
     return res
       .status(400)
