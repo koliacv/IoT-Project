@@ -44,12 +44,17 @@ const Thermostat = ({ userID, deviceID }) => {
     fetchTemperatures();
   }, []);
 
+
   useEffect(() => {
-    // MQTT client
-    const client = mqtt.connect(BROKER_URL, {
+    // Define MQTT connection options
+    const options = {
       reconnectPeriod: 1000,
-    });
-    //client connects
+      rejectUnauthorized: false, // Allow self-signed certificates
+    };
+
+    // Connect to the MQTT broker
+    const client = mqtt.connect(BROKER_URL, options);
+
     client.on("connect", () => {
       console.log("Connected to MQTT broker");
       client.subscribe(topic, (err) => {
