@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: postgres
     volumes:
-      - ./include/postgres_data:/var/lib/postgresql/data
+      - /tmp/admin/include/postgres_data:/var/lib/postgresql/data
     networks:
       - internal
     ports:
@@ -41,7 +41,7 @@ services:
     container_name: portainer
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./include/portainer_data:/data
+      - /tmp/admin/include/portainer_data:/data
     networks:
       - internal
     ports:
@@ -71,16 +71,62 @@ services:
       - 8.8.8.8
       - 1.1.1.1
     volumes:
-      - ./external/proxy/data:/data
-      - ./external/proxy/letsencrypt:/etc/letsencrypt
+      - /tmp/admin/external/proxy/data:/data
+      - /tmp/admin/external/proxy/letsencrypt:/etc/letsencrypt
     networks: 
       - internal
     depends_on:
       - postgres
-      
+
+#MQTT Broker      
+#admin
+#ewIstRasteoU1
+  emqx1:
+    image: emqx:5.8.4
+    container_name: emqx1
+    environment:
+    - "EMQX_NODE_NAME=emqx@node1.emqx.io"
+    - "EMQX_CLUSTER__DISCOVERY_STRATEGY=static"
+    - "EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io,emqx@node2.emqx.io]"
+    # healthcheck:
+    #   test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+    #   interval: 5s
+    #   timeout: 25s
+    #   retries: 5
+    networks:
+      internal:
+        aliases:
+        - node1.emqx.io
+    ports:
+      - 1883:1883 #MQTT listener port
+      - 8883:8883 #MQTT over SSL/TLS listener port
+      - 18083:18083 #dashbord
+      - 8083:8083 #WebSocket
+      - 8084:8084 #WebSocket
+    # volumes:
+    #   - $PWD/emqx1_data:/opt/emqx/data
+
+  emqx2:
+    image: emqx:5.8.4
+    container_name: emqx2
+    environment:
+    - "EMQX_NODE_NAME=emqx@node2.emqx.io"
+    - "EMQX_CLUSTER__DISCOVERY_STRATEGY=static"
+    - "EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io,emqx@node2.emqx.io]"
+    # healthcheck:
+    #   test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+    #   interval: 5s
+    #   timeout: 25s
+    #   retries: 5
+    networks:
+      internal:
+        aliases:
+        - node2.emqx.io
+    # volumes:
+    #   - $PWD/emqx2_data:/opt/emqx/data
+
 networks:
   internal:
     driver: bridge
     external: true
     attachable: true
-
