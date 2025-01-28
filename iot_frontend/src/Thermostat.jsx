@@ -11,7 +11,6 @@ const Thermostat = ({ userID, deviceID }) => {
   const topic = "smarthome/temperature";
 
   // Set this to true to show error page or loading screen.
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -37,8 +36,8 @@ const Thermostat = ({ userID, deviceID }) => {
         } else {
           console.error("Failed to fetch temperatures");
         }
-      } catch (error) {
-        console.error("Error fetching temperatures:", error);
+      } catch (err) {
+        console.error("Error fetching temperatures:", err);
       }
     };
 
@@ -47,10 +46,9 @@ const Thermostat = ({ userID, deviceID }) => {
 
   useEffect(() => {
     // MQTT client
-    const client = mqtt.connect("ws://3.15.141.7:8083/mqtt", {
+    const client = mqtt.connect(BROKER_URL, {
       reconnectPeriod: 1000,
     });
-    console.log("a", client);
     //client connects
     client.on("connect", () => {
       console.log("Connected to MQTT broker");
@@ -165,7 +163,7 @@ const Thermostat = ({ userID, deviceID }) => {
     );
   }
 
-  if (error) {
+  if (!deviceID) {
     return (
       <div className="thermostat-container">
         <h1>Error</h1>
