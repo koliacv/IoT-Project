@@ -2,13 +2,11 @@
     text-align: center;
     font-family: Arial, sans-serif;
     color: #333;
-    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 10px;
-    min-height: 100vh; /* Ensure container fills the viewport */
     display: flex;
     flex-direction: column;
     justify-content: center;
