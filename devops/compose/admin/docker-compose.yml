@@ -101,6 +101,8 @@ services:
       - 1883:1883 #MQTT listener port
       - 8883:8883 #MQTT over SSL/TLS listener port
       - 18083:18083 #dashbord
+      - 8083:8083 #WebSocket
+      - 8084:8084 #WebSocket
     # volumes:
     #   - $PWD/emqx1_data:/opt/emqx/data
 
