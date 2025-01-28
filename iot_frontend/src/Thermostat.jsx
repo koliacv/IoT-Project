@@ -1,45 +1,43 @@
-import React, { useState, useEffect } from "react";
-import { API_URL } from "../config";
+import { useState, useEffect } from "react";
+import mqtt from "mqtt";
+import { API_URL, BROKER_URL } from "../config";
 import "./Thermostat.css";
 
-const Thermostat = (userID) => {
-  const [device, setDevice] = useState("");
+// eslint-disable-next-line react/prop-types
+const Thermostat = ({ userID, deviceID }) => {
+  const [boilerOn, setBoilerOn] = useState(false);
   const [temperature, setTemperature] = useState(20.5); // Default thermostat temperature
   const [roomTemp, setRoomTemp] = useState(18.0); // Default room temperature
+  const topic = "smarthome/temperature";
 
   // Set this to true to show error page or loading screen.
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // const increaseTemp = () => setTemperature((prev) => Math.min(prev + 0.5, 30));
-  // const decreaseTemp = () => setTemperature((prev) => Math.max(prev - 0.5, 5));
 
   useEffect(() => {
     const fetchTemperatures = async () => {
       try {
-        const response = await fetch(`${API_URL}/get-temperatures/${userID}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${API_URL}/get-temperature/${userID}/${deviceID}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (response.ok) {
-          const data = await response.json().tempretures;
-          if (data.length > 0) {
-            const deviceTemp = data[0].currentTemperatures || null;
-            const userTemp = data[0].userTemperature || null;
-            const deviceID = data[0].deviceId || null;
+          const data = await response.json();
+          const deviceTemp = data.currentTemperature || null;
+          const userTemp = data.userTemperature || null;
 
-            setRoomTemp(deviceTemp);
-            setTemperature(userTemp);
-            setDevice(deviceID);
-          }
+          setRoomTemp(deviceTemp);
+          setTemperature(userTemp);
         } else {
           console.error("Failed to fetch temperatures");
         }
-      } catch (error) {
-        console.error("Error fetching temperatures:", error);
+      } catch (err) {
+        console.error("Error fetching temperatures:", err);
       }
     };
 
@@ -47,39 +45,77 @@ const Thermostat = (userID) => {
   }, []);
 
   useEffect(() => {
-    if (temperature !== null) {
-      const sendTemperatureUpdate = async () => {
-        try {
-          const response = await fetch(`${API_URL}/set-temperature`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              userId: userID,
-              deviceId: device,
-              temperature,
-            }),
-          });
-
-          if (!response.ok) {
-            console.error("Failed to update temperature");
-          }
-        } catch (error) {
-          console.error("Error updating temperature:", error);
+    // MQTT client
+    const client = mqtt.connect(BROKER_URL, {
+      reconnectPeriod: 1000,
+    });
+    //client connects
+    client.on("connect", () => {
+      console.log("Connected to MQTT broker");
+      client.subscribe(topic, (err) => {
+        if (err) {
+          console.error("Subscription error:", err);
+        } else {
+          console.log(`Subscribed to topic: ${topic}`);
         }
-      };
+      });
+    });
 
-      sendTemperatureUpdate();
+    client.on("message", (topic, message) => {
+      try {
+        const parsedMessage = JSON.parse(message.toString());
+        const { userId, deviceId, temperature: temp, boiler_on } = parsedMessage;
+        if (userId === userID && deviceId === deviceID) {
+          // console.log(`Message for ${userId}, ${deviceId}: ${temp}°C; Heating ${boilerOn ? "On" : "Off"}`);
+          setRoomTemp(temp);
+          setBoilerOn(boiler_on);
+        }
+      } catch (err) {
+        console.error("Failed to parse message:", err);
+      }
+    });
+    return () => {
+      client.end();
+      console.log("Disconnected from MQTT broker");
+    };
+  }, []);
+
+  const sendTemperatureUpdate = async (thisTemp) => {
+    if (temperature !== null && deviceID !== null) {
+      try {
+        const response = await fetch(`${API_URL}/set-temperature`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userID,
+            deviceId: deviceID,
+            temperature: thisTemp,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error("Failed to update temperature");
+        }
+      } catch (error) {
+        console.error("Error updating temperature:", error);
+      }
     }
-  }, [temperature, device]);
+  };
 
   // Handlers to increase and decrease temperature
-  const increaseTemp = () =>
-    setTemperature((prev) => Math.min(prev + 0.5, 30));
+  const increaseTemp = () => {
+    const thisTemp = temperature >=30 ? temperature : temperature + 0.5;
+    setTemperature(thisTemp);
+    sendTemperatureUpdate(thisTemp);
+  };
 
-  const decreaseTemp = () =>
-    setTemperature((prev) => Math.max(prev - 0.5, 5));
+  const decreaseTemp = () => {
+    const thisTemp = temperature <=5 ? temperature : temperature - 0.5;
+    setTemperature(thisTemp);
+    sendTemperatureUpdate(thisTemp);
+  };
 
   if (loading) {
     return (
@@ -87,9 +123,9 @@ const Thermostat = (userID) => {
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
           <circle
             fill="none"
-            stroke-opacity="1"
+            // stroke-opacity="1"
             stroke="#FF7034"
-            stroke-width=".5"
+            // stroke-width=".5"
             cx="100"
             cy="100"
             r="0"
@@ -127,7 +163,7 @@ const Thermostat = (userID) => {
     );
   }
 
-  if (error) {
+  if (!deviceID) {
     return (
       <div className="thermostat-container">
         <h1>Error</h1>
@@ -139,7 +175,7 @@ const Thermostat = (userID) => {
   return (
     <div className="thermostat-container">
       <h1>Thermostat</h1>
-      <p className="status">Heating On</p>
+      <p className="status">Heating {boilerOn ? "On" : "Off"}</p>
       <div className="circle">
         <div className="temperature">
           <h2>{temperature}°C</h2>
@@ -157,12 +193,6 @@ const Thermostat = (userID) => {
           </button>
         </div>
       </div>
-      {/* /*<div className="menu">
-        <button className="power">Power</button>
-        <button className="manual">Manual</button>
-        <button className="schedule">Schedule</button>
-        <button className="setting">Settings</button>
-      </div> */}
     </div>
   );
 };
